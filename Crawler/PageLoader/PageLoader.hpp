@@ -2,15 +2,16 @@
 #define PAGE_LOADER_HPP
 
 #include "Page.hpp"
+#include "curl/curl.h"
 
 class PageLoader
 {
-private:
-
 
 public:
-    
-    Page load(std::string url);
+    Page load(std::string& url);
+
+private:
+    std::size_t write_data(void* ptr, std::size_t size, std::size_t nmemb, std::string* data);
 };
 
 #endif
