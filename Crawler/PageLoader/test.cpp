@@ -3,11 +3,12 @@
 
 int main()
 {
-    std::string s = "https://rau.am";
+    std::string url = "http://rau.am";
 
-    PageLoader PL;
-    Page res = PL.load(s);
+    PageLoader pageLoader;
+    Page result = pageLoader.load(url);
 
-    std::cout << res.getBody();
+    std::cout << result.getStatus() << std::endl;
+    std::cout << result.getBody() << std::endl;
     return 0;
 }

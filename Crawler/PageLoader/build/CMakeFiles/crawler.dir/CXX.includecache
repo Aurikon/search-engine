@@ -1,0 +1,28 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/aurikon/search-engine/Crawler/PageLoader/Page.hpp
+string
+-
+
+/home/aurikon/search-engine/Crawler/PageLoader/PageLoader.cpp
+PageLoader.hpp
+/home/aurikon/search-engine/Crawler/PageLoader/PageLoader.hpp
+
+/home/aurikon/search-engine/Crawler/PageLoader/PageLoader.hpp
+Page.hpp
+/home/aurikon/search-engine/Crawler/PageLoader/Page.hpp
+curl/curl.h
+-
+
+/home/aurikon/search-engine/Crawler/PageLoader/test.cpp
+PageLoader.hpp
+/home/aurikon/search-engine/Crawler/PageLoader/PageLoader.hpp
+iostream
+-
+
