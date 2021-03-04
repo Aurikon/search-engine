@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/crawler.dir/Page.cpp.o CMakeFiles/crawler.dir/PageLoader.cpp.o CMakeFiles/crawler.dir/test.cpp.o  -o crawler  -lcurl 

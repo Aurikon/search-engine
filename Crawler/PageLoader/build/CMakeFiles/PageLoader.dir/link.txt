@@ -1,1 +1,0 @@
-/usr/bin/c++     CMakeFiles/PageLoader.dir/Page.cpp.o CMakeFiles/PageLoader.dir/PageLoader.cpp.o CMakeFiles/PageLoader.dir/test.cpp.o  -o PageLoader  -lcurl 
