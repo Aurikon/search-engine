@@ -2,11 +2,11 @@
 #define PAGE_HPP
 
 #include <string>
-
 class Page
 {
 private:
-    std::string body;
+    std::string domain;
+    std::string body; // html code
     int status;
     
 public:
@@ -14,8 +14,7 @@ public:
     ~Page();
 
     const std::string& getBody() const;
-
-    int getStatus() const; //0 - successful, 
+    int getStatus() const;
 };
 
 #endif
