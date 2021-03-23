@@ -3,7 +3,7 @@
 
 int main()
 {
-    std::string url = "https://rau.am";
+    std::string url = "https:://rau.am";
 
     PageLoader pageLoader;
     Page result = pageLoader.load(url);

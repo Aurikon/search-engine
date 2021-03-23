@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-void Parser::parse(const Page& page, const std::string& rootURL)
+void Parser::parse(const Page& page,const std::string& rootURL)
 {
     std::string body = page.getBody();
     this->domain = this->getDomain(rootURL);
@@ -17,9 +17,20 @@ void Parser::parse(const Page& page, const std::string& rootURL)
 
 const std::string& Parser::getDomain(const std::string& rootURL) const
 {   
-    std::string result;
-    sscanf(rootURL.c_str(), "http://%[^/]", result.c_str());
-    return result;
+    std::size_t slashPos = 0;
+    for(std::size_t i = 0; i < rootURL.size(); ++i, ++slashPos)
+    {
+        if(rootURL[i] == '/' && rootURL[i-1] == '/')
+        {
+            break;
+        }
+    }
+    while (rootURL[slashPos] != '/')
+    {
+        ++slashPos;
+    }
+
+    return std::string(rootURL, 0, slashPos);
 }
 
 
@@ -50,7 +61,7 @@ void Parser::extractLinks(GumboNode* node, const std::string& domain)
     GumboVector* children = &node->v.element.children;
     for(std::size_t i = 0; i < children->length; ++i)
     {
-        this->extractLinks(static_cast<GumboNode*>(children->data[i]));
+        this->extractLinks(static_cast<GumboNode*>(children->data[i]), domain);
     }
 }
 
@@ -73,11 +84,15 @@ const std::string& Parser::getContent() const
     return this->content;
 }
 
-bool isLinkAbsolute(const std::string& url)
+bool Parser::isLinkAbsolute(const std::string& url)
 {
-    if(url.size() < 2)
-    {
+    if(url.size() < 2) {
         return false;
     }
-    // finish up
+
+    if(url[0] == '/' && url[1] == '/' || std::string(url, 0, 7) == "http://" || std::string(url, 0, 8) == "https://") {
+        return true;
+    }
+
+    return false;
 }
