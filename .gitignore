@@ -31,4 +31,4 @@
 *.out
 *.app
 
-/Crawler/PageLoader/build
+build/
