@@ -11,7 +11,6 @@ public:
 
 private:
     static std::size_t write_data(void* ptr, std::size_t size, std::size_t nmemb, std::string* data);
-    std::string getDomainFromURL(const std::string& url);
 };
 
 #endif

@@ -20,7 +20,10 @@ private: // data
     std::string domain;
 private: // functions
 
-    void extractLinks(GumboNode* node, const std::string& domain);
+    const std::vector<std::string>& extractLinks(GumboNode* node, const std::string& domain);
+    const std::string& extractTitle(GumboNode* node);
+    const std::string& extractDescription(GumboNode* node);
+    const std::string& extractContent(GumboNode* node);
     bool isLinkAbsolute(const std::string& url);
     
 

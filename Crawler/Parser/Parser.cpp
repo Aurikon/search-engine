@@ -1,8 +1,6 @@
 #include "Parser.hpp"
 
-#include <cstdio>
-
-void Parser::parse(const Page& page,const std::string& rootURL)
+void Parser::parse(const Page& page, const std::string& rootURL)
 {
     std::string body = page.getBody();
     this->domain = this->getDomain(rootURL);
@@ -11,9 +9,13 @@ void Parser::parse(const Page& page,const std::string& rootURL)
     {
         return;
     }
-    this->extractLinks(output->root, domain);
+    this->links = this->extractLinks(output->root, domain);
+    this->title = this->extractTitle(output->root);
+    this->description = this->extractDescription(output->root);
+
     gumbo_destroy_output(&kGumboDefaultOptions, output);
 }
+
 
 const std::string& Parser::getDomain(const std::string& rootURL) const
 {   
@@ -33,8 +35,7 @@ const std::string& Parser::getDomain(const std::string& rootURL) const
     return std::string(rootURL, 0, slashPos);
 }
 
-
-void Parser::extractLinks(GumboNode* node, const std::string& domain)
+const std::vector<std::string>& Parser::extractLinks(GumboNode* node, const std::string& domain)
 {
     if(node->type != GUMBO_NODE_ELEMENT)
     {
@@ -48,7 +49,7 @@ void Parser::extractLinks(GumboNode* node, const std::string& domain)
         {
             if(this->isLinkAbsolute(href->value))
             {
-                this->links.push_back(href->value); // task: clear links
+                this->links.push_back(href->value); 
             }
             else
             {
@@ -62,6 +63,86 @@ void Parser::extractLinks(GumboNode* node, const std::string& domain)
     for(std::size_t i = 0; i < children->length; ++i)
     {
         this->extractLinks(static_cast<GumboNode*>(children->data[i]), domain);
+    }
+}
+
+
+const std::string& Parser::extractTitle(GumboNode* node)
+{
+    if(node->type != GUMBO_NODE_ELEMENT)
+    {
+        return;
+    }
+
+    // find head
+    GumboNode* head = NULL;
+    GumboVector* nodeChildren = &(node->v.element.children);
+    for(auto i = 0; i < nodeChildren->length; ++i)
+    {
+        GumboNode* child = static_cast<GumboNode*>(nodeChildren->data[i]);
+
+        if(child->type == GUMBO_NODE_ELEMENT && child->v.element.tag == GUMBO_TAG_HEAD)
+        {
+            head = child;
+            break;
+        }
+    }
+
+    GumboVector* headChildren = &head->v.element.children;
+    for(auto i = 0; i < headChildren->length; ++i)
+    {
+        GumboNode* child = static_cast<GumboNode*>(headChildren->data[i]);
+
+        if(child->type == GUMBO_NODE_ELEMENT && child->v.element.tag == GUMBO_TAG_TITLE)
+        {
+            if(child->v.element.children.length != 1)
+            {
+                return "<empty title>";
+            }
+            GumboNode* titleText = static_cast<GumboNode*>(child->v.element.children.data[0]);
+            return titleText->v.text.text;
+        }
+    }
+
+    return "<title not found>";
+}
+
+const std::string& extractDescription(GumboNode* node)
+{
+    if(node->type != GUMBO_NODE_ELEMENT)
+    {
+        return;
+    }
+
+    // find head
+    GumboNode* head = NULL;
+    GumboVector* nodeChildren = &(node->v.element.children);
+    for(auto i = 0; i < nodeChildren->length; ++i)
+    {
+        GumboNode* child = static_cast<GumboNode*>(nodeChildren->data[i]);
+
+        if(child->type == GUMBO_NODE_ELEMENT && child->v.element.tag == GUMBO_TAG_HEAD)
+        {
+            head = child;
+            break;
+        }
+    }
+
+    GumboVector* headChildren = &head->v.element.children;
+    for(auto i = 0; i < headChildren->length; ++i)
+    {
+        GumboNode* child = static_cast<GumboNode*>(headChildren->data[i]);
+
+        if(child->type == GUMBO_NODE_ELEMENT && child->v.element.tag == GUMBO_TAG_META)
+        {
+            GumboAttribute* name = gumbo_get_attribute(&node->v.element.attributes, "name");
+
+            if(name->value == "description")
+            {
+                GumboAttribute* content = gumbo_get_attribute(&node->v.element.attributes, "content");
+                return content->value;
+            }
+        }
     }
 }
 
@@ -86,11 +167,13 @@ const std::string& Parser::getContent() const
 
 bool Parser::isLinkAbsolute(const std::string& url)
 {
-    if(url.size() < 2) {
+    if(url.size() < 2)
+    {
         return false;
     }
 
-    if(url[0] == '/' && url[1] == '/' || std::string(url, 0, 7) == "http://" || std::string(url, 0, 8) == "https://") {
+    if(url[0] == '/' && url[1] == '/' || std::string(url, 0, 7) == "http://" || std::string(url, 0, 8) == "https://") 
+    {
         return true;
     }
 
