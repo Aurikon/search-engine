@@ -1,17 +1,18 @@
 #include "Parser.hpp"
 
-void Parser::parse(const Page& page, const std::string& rootURL)
+void Parser::parse(const std::string& body, const std::string& rootURL)
 {
-    std::string body = page.getBody();
+    
     this->domain = this->getDomain(rootURL);
     GumboOutput* output = gumbo_parse(body.c_str());
     if(!output)
     {
         return;
     }
-    this->links = this->extractLinks(output->root, domain);
-    this->title = this->extractTitle(output->root);
-    this->description = this->extractDescription(output->root);
+    
+    this->extractLinks(output->root, domain);
+    this->extractTitle(output->root);
+    this->extractDescription(output->root);
 
     gumbo_destroy_output(&kGumboDefaultOptions, output);
 }
@@ -35,7 +36,7 @@ const std::string& Parser::getDomain(const std::string& rootURL) const
     return std::string(rootURL, 0, slashPos);
 }
 
-const std::vector<std::string>& Parser::extractLinks(GumboNode* node, const std::string& domain)
+void Parser::extractLinks(GumboNode* node, const std::string& domain)
 {
     if(node->type != GUMBO_NODE_ELEMENT)
     {
@@ -67,7 +68,7 @@ const std::vector<std::string>& Parser::extractLinks(GumboNode* node, const std:
 }
 
 
-const std::string& Parser::extractTitle(GumboNode* node)
+void Parser::extractTitle(GumboNode* node)
 {
     if(node->type != GUMBO_NODE_ELEMENT)
     {
@@ -97,17 +98,17 @@ const std::string& Parser::extractTitle(GumboNode* node)
         {
             if(child->v.element.children.length != 1)
             {
-                return "<empty title>";
+                this->title = "<empty title>";
             }
             GumboNode* titleText = static_cast<GumboNode*>(child->v.element.children.data[0]);
-            return titleText->v.text.text;
+            this->title = titleText->v.text.text;
         }
     }
 
-    return "<title not found>";
+    this->title = "<title not found>";
 }
 
-const std::string& extractDescription(GumboNode* node)
+void Parser::extractDescription(GumboNode* node)
 {
     if(node->type != GUMBO_NODE_ELEMENT)
     {
@@ -140,10 +141,32 @@ const std::string& extractDescription(GumboNode* node)
             if(name->value == "description")
             {
                 GumboAttribute* content = gumbo_get_attribute(&node->v.element.attributes, "content");
-                return content->value;
+                this->description = content->value;
             }
         }
     }
+}
+
+void Parser::extractContent(GumboNode* node)
+{
+    if (node->type != GUMBO_NODE_ELEMENT || node->v.element.tag == GUMBO_TAG_STYLE || node->v.element.tag==GUMBO_TAG_SCRIPT) 
+    {
+		return;
+	}
+
+    if (node->type==GUMBO_NODE_TEXT) 
+    {
+		this->content += std::string(node->v.text.text);
+		this->content += '\n';
+		return;
+	}
+	
+	GumboVector* children = &node->v.element.children;
+	for (size_t i = 0; i < children->length; ++i) 
+    {
+		this->content += ' ';
+		this->extractContent(static_cast<GumboNode*>(children->data[i]));	
+	}
 }
 
 const std::vector<std::string>& Parser::getLinks() const

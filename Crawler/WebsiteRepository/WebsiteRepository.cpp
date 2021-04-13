@@ -1,44 +1,35 @@
 #include "WebsiteRepository.hpp"
 
-#include <algorithm>
-
 const std::vector<Website>& WebsiteRepository::getAll() const
 {
     return websites;
 }
 
-const std::pair<bool, Website> WebsiteRepository::getById(int id) const
-{
-    if(id < idCounter)
-    {
-        return std::make_pair(true, websites[id]);
-    }
-    else
-    {
-        std::make_pair(false, nullptr);
-    }
-}
-
-const std::pair<bool, Website> WebsiteRepository::getByDomain(const std::string& domain) const
+const std::optional<Website> WebsiteRepository::getByDomain(const std::string& domain) const
 {
     for(auto website : websites)
     {
         if(website.getDomain() == domain)
         {
-            return std::make_pair(true, website);
+            return website;
         }
     }
 
-    return std::make_pair(false, nullptr); 
+    return {};
 }
 
 bool WebsiteRepository::add(const Website& website)
 {
-    websites[idCounter++] = website;
-    return true;
+    websites.push_back(website);
 }
 
-void WebsiteRepository::update(int id, const Website& website)
+void WebsiteRepository::update(const std::string& domain, const Website& website)
 {
-    websites[id] = Website;
+    for(auto& elem : websites)
+    {
+        if(elem.getDomain() == domain)
+        {
+            elem = website;
+        }
+    }
 }

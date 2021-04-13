@@ -5,8 +5,8 @@
 
 int main()
 {
-    WebsiteRepository wr;
-    auto& websites = wr.getAll();
+    WebsiteRepository websiteRepo;
+    auto& websites = websiteRepo.getAll();
 
 
     LinkInfoRepository linkRepo;  
@@ -14,13 +14,17 @@ int main()
 
     for(auto& website : websites)
     {
+        if(website.getStatus() != WebsiteStatus::WAITING)
+        {
+            continue;
+        }
         /*  
             check, is website processed
             add or update in lr website homepage
         */
         while(true)
         {
-            auto& links = linkRepo.getBy(website.getDomain(), WAITING, 10);
+            auto& links = linkRepo.getBy(website.getDomain(), LinkStatus::WAITING, 10);
             if(links.size() == 0)
             {
                 break;
@@ -30,7 +34,7 @@ int main()
                 Page page = pageloader.load(link.getUrl());
                 if(page.getStatus() < 200 || page.getStatus() >= 300)
                 {
-                    linkRepo.save(LinkInfo(link.getUrl(), link.getDomain(), ERROR, time(nullptr)));
+                    linkRepo.save(LinkInfo(link.getUrl(), link.getDomain(), LinkStatus::ERROR, time(nullptr)));
                     continue;
                 }
                 Parser parser;
@@ -45,12 +49,11 @@ int main()
                     {
                         continue;
                     }
-                    linkRepo.save(LinkInfo(url, website.getDomain(), WAITING, time(nullptr)));
+                    linkRepo.save(LinkInfo(url, website.getDomain(), LinkStatus::WAITING, time(nullptr)));
                 }
 
-                linkRepo.save(LinkInfo(link.getUrl(), link.getDomain(), LOADED, time(nullptr)));
-                // mark current link as loaded
-                // update time
+                linkRepo.save(LinkInfo(link.getUrl(), link.getDomain(), LinkStatus::LOADED, time(nullptr)));
+                
 
 
             }

@@ -1,6 +1,6 @@
 #ifndef LINKSTATUS_HPP
 #define LINKSTATUS_HPP
 
-enum LinkStatus{ WAITING, LOADED, ERROR };
+enum class LinkStatus{ WAITING, LOADED, ERROR };
 
 #endif

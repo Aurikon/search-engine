@@ -13,6 +13,7 @@ class Parser
 private: // data
 
     std::vector<std::string> links;
+    
     std::string title;
     std::string description;
     std::string content;
@@ -20,10 +21,10 @@ private: // data
     std::string domain;
 private: // functions
 
-    const std::vector<std::string>& extractLinks(GumboNode* node, const std::string& domain);
-    const std::string& extractTitle(GumboNode* node);
-    const std::string& extractDescription(GumboNode* node);
-    const std::string& extractContent(GumboNode* node);
+    void extractLinks(GumboNode* node, const std::string& domain);
+    void extractTitle(GumboNode* node);
+    void extractDescription(GumboNode* node);
+    void extractContent(GumboNode* node);
     bool isLinkAbsolute(const std::string& url);
     
 
@@ -35,7 +36,7 @@ public:
 
     const std::string& getDomain(const std::string& rootURL) const; 
     
-    void parse(const Page& page, const std::string& rootURL);
+    void parse(const std::string& body, const std::string& rootURL);
 };
 
 #endif
