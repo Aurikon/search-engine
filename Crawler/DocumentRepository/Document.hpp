@@ -7,13 +7,14 @@
 class Document
 {
 private:
+    std::string url;
     std::string title;
     std::string description;
     std::string content;
-    std::string url;
     time_t lastUpdatedTime;
 
 public:
+    Document(std::string url, std::string title, std::string description, std::string content, time_t time);
     const std::string& getTitle() const;
     const std::string& getDescription() const;
     const std::string& getContent() const;

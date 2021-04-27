@@ -1,24 +1,26 @@
 #include "Parser.hpp"
 
-void Parser::parse(const std::string& body, const std::string& rootURL)
+void Parser::parse(const std::string& body, const std::string& rootURL, const std::string& urlDomain)
 {
     
-    this->domain = this->getDomain(rootURL);
+    this->domain = urlDomain;
     GumboOutput* output = gumbo_parse(body.c_str());
     if(!output)
     {
         return;
     }
-    
-    this->extractLinks(output->root, domain);
+
+    this->extractLinks(output->root);
+      
     this->extractTitle(output->root);
     this->extractDescription(output->root);
-
+    this->extractContent(output->root);
+    
     gumbo_destroy_output(&kGumboDefaultOptions, output);
 }
 
 
-const std::string& Parser::getDomain(const std::string& rootURL) const
+const std::string Parser::getDomain(const std::string& rootURL) const
 {   
     std::size_t slashPos = 0;
     for(std::size_t i = 0; i < rootURL.size(); ++i, ++slashPos)
@@ -28,15 +30,24 @@ const std::string& Parser::getDomain(const std::string& rootURL) const
             break;
         }
     }
+    //++slashPos;
     while (rootURL[slashPos] != '/')
     {
         ++slashPos;
     }
-
-    return std::string(rootURL, 0, slashPos);
+    if(std::string(rootURL, 0, 7) == "http://")
+    {
+        return std::string(rootURL, 7, slashPos);
+    }
+    else if (std::string(rootURL, 0, 8) == "https://")
+    {
+        return std::string(rootURL, 8, slashPos);
+    }
+    
+    return "";
 }
 
-void Parser::extractLinks(GumboNode* node, const std::string& domain)
+void Parser::extractLinks(GumboNode* node)
 {
     if(node->type != GUMBO_NODE_ELEMENT)
     {
@@ -47,14 +58,18 @@ void Parser::extractLinks(GumboNode* node, const std::string& domain)
     {
         GumboAttribute* href = gumbo_get_attribute(&node->v.element.attributes, "href");
         if(href)
-        {
-            if(this->isLinkAbsolute(href->value))
+        {   
+            std::string tmp(href->value);
+            if(tmp.find(this->domain) != std::string::npos)
             {
-                this->links.push_back(href->value); 
-            }
-            else
-            {
-                this->links.push_back(domain + href->value);
+                if(this->isLinkAbsolute(href->value))
+                {
+                    this->links.push_back(href->value); 
+                }
+                else
+                {
+                    this->links.push_back(this->domain.append(href->value));
+                }
             }
         }
         return;
@@ -63,7 +78,7 @@ void Parser::extractLinks(GumboNode* node, const std::string& domain)
     GumboVector* children = &node->v.element.children;
     for(std::size_t i = 0; i < children->length; ++i)
     {
-        this->extractLinks(static_cast<GumboNode*>(children->data[i]), domain);
+        this->extractLinks(static_cast<GumboNode*>(children->data[i]));
     }
 }
 
@@ -101,7 +116,11 @@ void Parser::extractTitle(GumboNode* node)
                 this->title = "<empty title>";
             }
             GumboNode* titleText = static_cast<GumboNode*>(child->v.element.children.data[0]);
-            this->title = titleText->v.text.text;
+            if(titleText->type == GUMBO_NODE_TEXT)
+            {
+                this->title = titleText->v.text.text;
+                return;
+            }
         }
     }
 
@@ -110,62 +129,56 @@ void Parser::extractTitle(GumboNode* node)
 
 void Parser::extractDescription(GumboNode* node)
 {
-    if(node->type != GUMBO_NODE_ELEMENT)
+    if(node->type!=GUMBO_NODE_ELEMENT) 
     {
-        return;
-    }
-
-    // find head
-    GumboNode* head = NULL;
-    GumboVector* nodeChildren = &(node->v.element.children);
-    for(auto i = 0; i < nodeChildren->length; ++i)
+		return;
+	}
+	
+	if(node->v.element.tag!=GUMBO_TAG_META) 
     {
-        GumboNode* child = static_cast<GumboNode*>(nodeChildren->data[i]);
+		GumboVector* children = &node->v.element.children;
 
-        if(child->type == GUMBO_NODE_ELEMENT && child->v.element.tag == GUMBO_TAG_HEAD)
+		for(std::size_t i = 0; i < children->length; ++i) 
         {
-            head = child;
-            break;
-        }
-    }
+			this->extractDescription(static_cast<GumboNode*>(children->data[i]));
+		}
+	}
+	
 
-    GumboVector* headChildren = &head->v.element.children;
-    for(auto i = 0; i < headChildren->length; ++i)
+	GumboAttribute* name = gumbo_get_attribute(&node->v.element.attributes, "name");
+	if (name==nullptr || name->value==nullptr || std::string(name->value) != "description") 
     {
-        GumboNode* child = static_cast<GumboNode*>(headChildren->data[i]);
+		return;
+	}
 
-        if(child->type == GUMBO_NODE_ELEMENT && child->v.element.tag == GUMBO_TAG_META)
-        {
-            GumboAttribute* name = gumbo_get_attribute(&node->v.element.attributes, "name");
+	GumboAttribute* cont = gumbo_get_attribute(&node->v.element.attributes, "content");
+	if (cont == nullptr || cont->value == nullptr) 
+    {
+		return;
+	}
 
-            if(name->value == "description")
-            {
-                GumboAttribute* content = gumbo_get_attribute(&node->v.element.attributes, "content");
-                this->description = content->value;
-            }
-        }
-    }
+	this->description = std::string(cont->value);
 }
 
 void Parser::extractContent(GumboNode* node)
 {
-    if (node->type != GUMBO_NODE_ELEMENT || node->v.element.tag == GUMBO_TAG_STYLE || node->v.element.tag==GUMBO_TAG_SCRIPT) 
+    if (node->type == GUMBO_NODE_TEXT) 
+    {
+		this->content.append(std::string(node->v.text.text));
+		this->content.append("\n");
+	}
+    
+    if (node->type != GUMBO_NODE_ELEMENT || node->v.element.tag == GUMBO_TAG_STYLE || node->v.element.tag == GUMBO_TAG_SCRIPT) 
     {
 		return;
 	}
 
-    if (node->type==GUMBO_NODE_TEXT) 
-    {
-		this->content += std::string(node->v.text.text);
-		this->content += '\n';
-		return;
-	}
-	
+
 	GumboVector* children = &node->v.element.children;
-	for (size_t i = 0; i < children->length; ++i) 
+	for (size_t i = 0; i<children->length; ++i) 
     {
-		this->content += ' ';
-		this->extractContent(static_cast<GumboNode*>(children->data[i]));	
+		this->content.append(" ");
+		this->extractContent(static_cast<GumboNode*>(children->data[i]));
 	}
 }
 

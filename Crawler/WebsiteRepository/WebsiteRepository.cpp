@@ -1,5 +1,7 @@
 #include "WebsiteRepository.hpp"
 
+
+
 const std::vector<Website>& WebsiteRepository::getAll() const
 {
     return websites;
@@ -18,7 +20,7 @@ const std::optional<Website> WebsiteRepository::getByDomain(const std::string& d
     return {};
 }
 
-bool WebsiteRepository::add(const Website& website)
+void WebsiteRepository::add(const Website& website)
 {
     websites.push_back(website);
 }

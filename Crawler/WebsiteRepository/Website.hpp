@@ -14,6 +14,7 @@ private:
     WebsiteStatus status;
 
 public:
+    Website(std::string domain,std::string homepage, time_t time, WebsiteStatus status);
     const std::string& getDomain() const;
     const std::string& getHomepage() const;
     time_t getLastCrawlingTime() const;

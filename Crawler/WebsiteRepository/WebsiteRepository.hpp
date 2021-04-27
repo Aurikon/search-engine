@@ -14,7 +14,7 @@ public:
     const std::vector<Website>& getAll() const; // return websites
     const std::optional<Website> getByDomain(const std::string& domain) const;
 
-    bool add(const Website& website);
+    void add(const Website& website);
 
     void update(const std::string& domain, const Website& website); // update website with domain to website
 };
