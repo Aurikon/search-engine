@@ -1,5 +1,4 @@
 #include "Parser.hpp"
-
 void Parser::parse(const std::string& body, const std::string& rootURL, const std::string& urlDomain)
 {
     
@@ -7,11 +6,11 @@ void Parser::parse(const std::string& body, const std::string& rootURL, const st
     GumboOutput* output = gumbo_parse(body.c_str());
     if(!output)
     {
+        // handle 
         return;
     }
 
-    this->extractLinks(output->root);
-      
+    this->extractLinks(output->root, rootURL);   
     this->extractTitle(output->root);
     this->extractDescription(output->root);
     this->extractContent(output->root);
@@ -20,34 +19,7 @@ void Parser::parse(const std::string& body, const std::string& rootURL, const st
 }
 
 
-const std::string Parser::getDomain(const std::string& rootURL) const
-{   
-    std::size_t slashPos = 0;
-    for(std::size_t i = 0; i < rootURL.size(); ++i, ++slashPos)
-    {
-        if(rootURL[i] == '/' && rootURL[i-1] == '/')
-        {
-            break;
-        }
-    }
-    //++slashPos;
-    while (rootURL[slashPos] != '/')
-    {
-        ++slashPos;
-    }
-    if(std::string(rootURL, 0, 7) == "http://")
-    {
-        return std::string(rootURL, 7, slashPos);
-    }
-    else if (std::string(rootURL, 0, 8) == "https://")
-    {
-        return std::string(rootURL, 8, slashPos);
-    }
-    
-    return "";
-}
-
-void Parser::extractLinks(GumboNode* node)
+void Parser::extractLinks(GumboNode* node, const std::string& rootURL)
 {
     if(node->type != GUMBO_NODE_ELEMENT)
     {
@@ -62,14 +34,21 @@ void Parser::extractLinks(GumboNode* node)
             std::string tmp(href->value);
             if(tmp.find(this->domain) != std::string::npos)
             {
-                if(this->isLinkAbsolute(href->value))
+                if(tmp.back() == '/')
                 {
-                    this->links.push_back(href->value); 
+                    tmp.pop_back();
                 }
-                else
-                {
-                    this->links.push_back(this->domain.append(href->value));
-                }
+                this->links.push_back(tmp); 
+            }
+            else if (tmp[0] == '/') // link is relative
+            {
+                // effectiveUrl need fixes 
+
+                /*std::cout << "root: " << rootURL << std::endl;
+                std::string appended(rootURL); 
+                appended.append(tmp);    s
+                std::cout << appended << std::endl;
+                this->links.push_back(appended); */
             }
         }
         return;
@@ -78,7 +57,7 @@ void Parser::extractLinks(GumboNode* node)
     GumboVector* children = &node->v.element.children;
     for(std::size_t i = 0; i < children->length; ++i)
     {
-        this->extractLinks(static_cast<GumboNode*>(children->data[i]));
+        this->extractLinks(static_cast<GumboNode*>(children->data[i]), rootURL);
     }
 }
 

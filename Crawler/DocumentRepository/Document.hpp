@@ -11,15 +11,13 @@ private:
     std::string title;
     std::string description;
     std::string content;
-    time_t lastUpdatedTime;
 
 public:
-    Document(std::string url, std::string title, std::string description, std::string content, time_t time);
-    const std::string& getTitle() const;
-    const std::string& getDescription() const;
-    const std::string& getContent() const;
-    const std::string& getUrl() const;
-    time_t getLastUpdatedTime() const;
+    Document(std::string url, std::string title, std::string description, std::string content);
+    [[nodiscard]] const std::string& getTitle() const;
+    [[nodiscard]] const std::string& getDescription() const;
+    [[nodiscard]] const std::string& getContent() const;
+    [[nodiscard]] const std::string& getUrl() const;
 };
 
 #endif

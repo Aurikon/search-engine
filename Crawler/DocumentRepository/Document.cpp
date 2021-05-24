@@ -1,11 +1,10 @@
 #include "Document.hpp"
 
-Document::Document(std::string url, std::string title, std::string description, std::string content, time_t time) :
+Document::Document(std::string url, std::string title, std::string description, std::string content) :
     url(std::move(url)),
     title(std::move(title)),
     description(std::move(description)),
-    content(std::move(content)),
-    lastUpdatedTime(time)
+    content(std::move(content))
 {
 }
 
@@ -26,9 +25,4 @@ const std::string& Document::getContent() const
 const std::string& Document::getUrl() const
 {
     return this->url;
-}
-
-time_t Document::getLastUpdatedTime() const
-{
-    return this->lastUpdatedTime;
 }

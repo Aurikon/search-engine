@@ -19,7 +19,7 @@ private: // data
     std::string domain;
 private: // functions
 
-    void extractLinks(GumboNode* node);
+    void extractLinks(GumboNode* node, const std::string& rootURL);
     void extractTitle(GumboNode* node);
     void extractDescription(GumboNode* node);
     void extractContent(GumboNode* node);
@@ -27,10 +27,10 @@ private: // functions
     const std::string getDomain(const std::string& rootURL) const; 
 
 public:
-    const std::vector<std::string>& getLinks() const;
-    const std::string& getTitle() const;
-    const std::string& getDescription() const;
-    const std::string& getContent() const;
+    [[nodiscard]] const std::vector<std::string>& getLinks() const;
+    [[nodiscard]] const std::string& getTitle() const;
+    [[nodiscard]] const std::string& getDescription() const;
+    [[nodiscard]] const std::string& getContent() const;
     
     
     void parse(const std::string& body, const std::string& rootURL, const std::string& urlDomain);

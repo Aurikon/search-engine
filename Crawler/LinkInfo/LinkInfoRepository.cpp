@@ -18,39 +18,35 @@ const std::optional<LinkInfo> LinkInfoRepository::getByUrl(const std::string& ur
     return {};
 }
 
-const std::vector<LinkInfo> LinkInfoRepository::getBy(const std::string& domain, LinkStatus status, int count) const
+const std::vector<LinkInfo> LinkInfoRepository::getBy
+    (int websiteId, LinkStatus status, int count, sql::Connection* connection) const
 {
-    std::vector<LinkInfo> result;
-    for(auto& link : this->links)
+    std::vector<LinkInfo> linksResult;
+    auto prepst = connection->prepareStatement("SELECT * from Links WHERE status=(?)");
+    prepst->setUInt(1, 0);
+    auto result = prepst->executeQuery();
+    for(int i = 0; i < count; ++i)
     {
-        if(link.getDomain() != domain || link.getStatus() != status)
-        {
-            continue;
-        }
-
-        result.push_back(link);
-
-        if(result.size() >= count)
+        if(!result->next())
         {
             break;
         }
+        linksResult.push_back(LinkInfo(result->getString("url"), result->getUInt("websiteId"), static_cast<LinkStatus>(result->getUInt("status"))));
     }
     
-    return result;
+    
+    return linksResult;
 }
 
-void LinkInfoRepository::save(const LinkInfo& link)
+void LinkInfoRepository::save(const LinkInfo& link, sql::Connection* connection)
 {
-    for(auto& elem : this->links)
-    {
-        if(elem.getUrl() != link.getUrl())
-        {
-            continue;
-        }
-
-        elem = link;
-        return;
-    }
+    sql::PreparedStatement* prepst;
+    prepst = connection->prepareStatement("INSERT INTO Links(url, websiteId, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE url=(?)");
+    prepst->setString(1, link.getUrl());
+    prepst->setInt(2, link.getWebsiteId());
+    prepst->setInt(3, static_cast<int>(link.getStatus()));
+    prepst->setString(4, link.getUrl());
+    prepst->execute();
 
     this->links.push_back(link);
 }

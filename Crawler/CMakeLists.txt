@@ -8,6 +8,9 @@ include_directories("Parser")
 include_directories("WebsiteRepository")
 include_directories("LinkInfo")
 include_directories("DocumentRepository")
+include_directories("MySQL")
+
+set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(crawler main.cpp)
 
@@ -23,3 +26,4 @@ target_link_libraries(crawler pageLoader)
 target_link_libraries(crawler linkInfo)
 target_link_libraries(crawler websiteRepository)
 target_link_libraries(crawler documentRepository)
+target_link_libraries(crawler -lmysqlcppconn)

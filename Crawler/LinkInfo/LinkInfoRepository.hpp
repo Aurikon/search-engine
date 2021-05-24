@@ -2,6 +2,7 @@
 #define LINKINFOREPOSITORY_HPP
 
 #include "LinkInfo.hpp"
+#include "mysql.hpp"
 #include <vector>
 #include <optional>
 
@@ -13,9 +14,10 @@ private:
 public:
     const std::vector<LinkInfo>& getAll() const;
     const std::optional<LinkInfo> getByUrl(const std::string& url) const;
-    const std::vector<LinkInfo> getBy(const std::string& domain, LinkStatus status, int count) const;
+    const std::vector<LinkInfo> getBy
+        (int websiteId, LinkStatus status, int count, sql::Connection* connection) const;
 
-    void save(const LinkInfo& link);
+    void save(const LinkInfo& link, sql::Connection* connection);
 };
 
 #endif

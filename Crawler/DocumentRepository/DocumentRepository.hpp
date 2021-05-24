@@ -2,17 +2,15 @@
 #define DOCUMENTREPOSITORY_HPP
 
 #include "Document.hpp"
-
+#include "mysql.hpp"
 #include <vector>
 
 class DocumentRepository
 {
-private:
-    std::vector<Document> documents;
 
 public:
-    const std::vector<Document>& getAll() const;
-    void add(const Document& document);
+    [[nodiscard]] const std::vector<Document>& getAll() const;
+    void add(const Document& document, sql::Connection* connection);
 };
 
 

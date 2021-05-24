@@ -10,17 +10,15 @@ class LinkInfo
 {
 private:
     std::string url;
-    std::string domain;
+    int websiteId;  // change constructor, ....
     LinkStatus status;
-    time_t loadedTime;
 
 public:
-    LinkInfo(std::string url, std::string domain, LinkStatus status, time_t loadedTime);
+    LinkInfo(std::string url, int websiteId, LinkStatus status);
 
-    const std::string& getUrl() const;
-    const std::string& getDomain() const;
-    LinkStatus getStatus() const;
-    time_t getLoadedTime() const;
+    [[nodiscard]] const std::string& getUrl() const;
+    [[nodiscard]] int getWebsiteId() const;
+    [[nodiscard]] LinkStatus getStatus() const;
 };
 
 #endif

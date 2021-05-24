@@ -7,7 +7,7 @@ class PageLoader
 {
 
 public:
-    Page load(const std::string& url);
+    [[nodiscard]] Page load(const std::string& url, std::string& domain);
 
 private:
     static std::size_t write_data(void* ptr, std::size_t size, std::size_t nmemb, std::string* data);

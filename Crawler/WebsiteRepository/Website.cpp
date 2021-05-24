@@ -1,13 +1,19 @@
 #include "Website.hpp"
 
 
-Website::Website(std::string domain, std::string homepage, time_t time, WebsiteStatus status) :
+Website::Website(int websiteId, std::string domain, std::string homepage, bool isCrawled) :
+    websiteId(websiteId),
     domain(std::move(domain)),
     homepage(std::move(homepage)),
-    lastCrawlingTime(time),
-    status(status)
+    crawled(crawled)
 {
 }
+
+int Website::getWebsiteId() const
+{
+    return this->websiteId;
+}
+
 const std::string& Website::getDomain() const
 {
     return this->domain;
@@ -18,12 +24,7 @@ const std::string& Website::getHomepage() const
     return this->homepage;
 }
 
-time_t Website::getLastCrawlingTime() const
+bool Website::isCrawled() const
 {
-    return this->lastCrawlingTime;
-}
-
-WebsiteStatus Website::getStatus() const
-{
-    return this->status;
+    return this->crawled;
 }
