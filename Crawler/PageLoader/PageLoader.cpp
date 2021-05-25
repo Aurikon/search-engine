@@ -1,5 +1,5 @@
 #include "PageLoader.hpp"
-
+#include <iostream>
 #include <curl/curl.h>
 
 Page PageLoader::load(const std::string& url, std::string& domain)
@@ -18,7 +18,6 @@ Page PageLoader::load(const std::string& url, std::string& domain)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &bodyResult);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
-        // set accept 
         
         CURLcode curlcode = curl_easy_perform(curl);
 
@@ -30,9 +29,9 @@ Page PageLoader::load(const std::string& url, std::string& domain)
         }
         curl_easy_cleanup(curl);
     }
-    
-
-    return Page(domain, std::string(EffectiveUrl), bodyResult, status);
+    std::cout << contentType << std::endl;
+    auto tmp = std::string(EffectiveUrl);
+    return Page(domain, tmp, bodyResult, status);
 }
 
 std::size_t PageLoader::write_data(void* ptr, std::size_t size, std::size_t nmemb, std::string* data)

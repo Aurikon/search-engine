@@ -46,6 +46,23 @@
         "typeinfo": "cpp",
         "iostream": "cpp",
         "map": "cpp",
-        "ctime": "cpp"
+        "ctime": "cpp",
+        "chrono": "cpp",
+        "cstring": "cpp",
+        "list": "cpp",
+        "ratio": "cpp",
+        "thread": "cpp",
+        "bitset": "cpp",
+        "forward_list": "cpp",
+        "csignal": "cpp",
+        "codecvt": "cpp",
+        "complex": "cpp",
+        "condition_variable": "cpp",
+        "set": "cpp",
+        "iomanip": "cpp",
+        "mutex": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp",
+        "*.dat": "cpp"
     }
 }
