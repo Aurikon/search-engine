@@ -14,3 +14,5 @@ add_subdirectory(Server)
 
 target_link_libraries(searchServer server)
 target_link_libraries(searchServer -lmysqlcppconn)
+target_link_libraries(searchServer -lssl)
+target_link_libraries(searchServer -lcrypto)

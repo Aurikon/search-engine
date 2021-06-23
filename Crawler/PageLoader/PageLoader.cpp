@@ -2,6 +2,7 @@
 #include <iostream>
 #include <curl/curl.h>
 
+
 Page PageLoader::load(const std::string& url, std::string& domain)
 {
     CURL* curl = curl_easy_init();

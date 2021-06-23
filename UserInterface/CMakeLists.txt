@@ -12,3 +12,5 @@ add_executable(ui main.cpp)
 add_subdirectory(Client)    
 
 target_link_libraries(ui client)
+target_link_libraries(ui -lssl)
+target_link_libraries(ui -lcrypto)
