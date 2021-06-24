@@ -16,6 +16,7 @@ public:
     [[nodiscard]] const std::string& getDomain() const;
     [[nodiscard]] const std::string& getHomepage() const;
     [[nodiscard]] bool isCrawled() const;
+    [[nodiscard]] time_t getLastCrawledTime();
 };
 
 #endif

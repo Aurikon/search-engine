@@ -1,6 +1,7 @@
 project(Server)
 
 include_directories("Search")
+include_directories("../MySQL")
 
 add_subdirectory(Search)
 

@@ -3,12 +3,13 @@ project(SearchServer)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#include_directories("Seacrh")
 include_directories("SearchResult")
 include_directories("Server")
 include_directories("MySQL")
 
 add_executable(searchServer main.cpp)
+
+set(CMAKE_BUILD_TYPE Debug)
 
 add_subdirectory(Server)
 

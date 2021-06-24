@@ -8,9 +8,11 @@ Page PageLoader::load(const std::string& url, std::string& domain)
     CURL* curl = curl_easy_init();
 
     std::string bodyResult{};
-    char* contentType = NULL;
+    std::string contentType{};
+    std::string effectiveUrl{};
+    char* contentType_c = NULL;
     int status;
-    char* EffectiveUrl = NULL;
+    char* effectiveUrl_c = NULL;
     
 
     if(curl)
@@ -24,15 +26,17 @@ Page PageLoader::load(const std::string& url, std::string& domain)
 
         if(curlcode == CURLE_OK)
         {
-            curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType);
             curl_easy_getinfo(curl, CURLINFO_HTTP_CODE, &status);
-            curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &EffectiveUrl);
+            curl_easy_getinfo(curl, CURLINFO_EFFECTIVE_URL, &effectiveUrl_c);
+            curl_easy_getinfo(curl, CURLINFO_CONTENT_TYPE, &contentType_c);
+    
+            contentType=contentType_c;
+            effectiveUrl=effectiveUrl_c;
         }
         curl_easy_cleanup(curl);
     }
-    std::cout << contentType << std::endl;
-    auto tmp = std::string(EffectiveUrl);
-    return Page(domain, tmp, bodyResult, status);
+    std::cout << contentType << effectiveUrl << std::endl;
+    return Page(domain, effectiveUrl, bodyResult, status);
 }
 
 std::size_t PageLoader::write_data(void* ptr, std::size_t size, std::size_t nmemb, std::string* data)

@@ -13,7 +13,7 @@ int main()
     std::cout << "What are we looking for? " <<  std::endl;
     std::cin >> message;
 
-    auto results = client.makeRequest(message);
+    auto results= client.makeRequest(message);
 
     for(auto elem : results)
     {

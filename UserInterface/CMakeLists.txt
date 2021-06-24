@@ -7,6 +7,8 @@ include_directories("Client")
 
 find_package(cpprestsdk REQUIRED)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 add_executable(ui main.cpp)
 
 add_subdirectory(Client)    
