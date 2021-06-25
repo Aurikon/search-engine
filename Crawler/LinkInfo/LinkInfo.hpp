@@ -10,7 +10,7 @@ class LinkInfo
 {
 private:
     std::string url;
-    int websiteId;  // change constructor, ....
+    int websiteId;
     LinkStatus status;
 
 public:

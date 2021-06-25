@@ -5,15 +5,24 @@
 #include "Parser.hpp"
 
 
+/*
+DB info 
+const sql::SQLString hostName = "tcp://localhost:3306/Crawler";
+const sql::SQLString userName = "root";
+const sql::SQLString password = "Admin_1390";
+*/
+
 int main()
 {
-    const sql::SQLString hostName = "tcp://localhost:3306/Crawler";
-    const sql::SQLString userName = "root";
-    const sql::SQLString password = "Admin_1390";
+
+    std::string hostName = "tcp://localhost:3306/Crawler";
+    std::string userName;
+    std::string password;
+    std::cin >> userName >> password;
+
 
     sql::mysql::MySQL_Driver* driver = sql::mysql::get_driver_instance();
     auto connection = driver->connect(hostName, userName, password);
-
     if(!connection)
     {
         std::cout << "Connection failed " << std::endl;
@@ -21,7 +30,6 @@ int main()
     }
 
     WebsiteRepository websiteRepo(connection);
-    
     auto websites = websiteRepo.getAll();
 
 
@@ -32,6 +40,7 @@ int main()
     for(auto& website : websites)
     {
         std::cout << "Crawling website: " << website.getDomain() << " " << website.getHomepage() << std::endl;
+
         linkRepo.save(LinkInfo(website.getHomepage(), website.getWebsiteId(), LinkStatus::WAITING), connection); 
         while(true)
         {
@@ -46,11 +55,13 @@ int main()
             {
                 std::string domain = website.getDomain();
                 Page page = pageloader.load(link.getUrl(), domain);
-                if (page.getStatus() < 200 || page.getStatus() >= 300)
+                if (page.getStatus() < 200 || page.getStatus() >= 300 || !page.isExist())
                 {
+                    std::cout << "Save link as ERROR: " << link.getUrl() << std::endl;
                     linkRepo.save(LinkInfo(link.getUrl(), website.getWebsiteId(), LinkStatus::ERROR), connection);
                     continue;
                 }
+
                 Parser parser;
                 parser.parse(page.getBody(), page.getEffectiveUrl(), page.getDomain());
                 
@@ -62,9 +73,10 @@ int main()
                     {
                         continue;
                     }
+                    std::cout << "Save link as WAITING: " << link.getUrl() << std::endl;
                     linkRepo.save(LinkInfo(url, website.getWebsiteId(), LinkStatus::WAITING), connection);
                 }
-
+                std::cout << "Save link as LOADED: " << link.getUrl() << std::endl;
                 linkRepo.save(LinkInfo(link.getUrl(), link.getWebsiteId(), LinkStatus::LOADED), connection);
             }
 

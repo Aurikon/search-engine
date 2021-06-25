@@ -1,10 +1,11 @@
 #include "Page.hpp"
 
-Page::Page(std::string& domain, std::string& effectiveUrl, std::string& body, int status):
+Page::Page(std::string& domain, std::string& effectiveUrl, std::string& body, int status, bool exist):
         domain(domain),
         effectiveUrl(effectiveUrl),
         body(body), 
-        status(status)
+        status(status),
+        exist(exist)
         {
         }
 

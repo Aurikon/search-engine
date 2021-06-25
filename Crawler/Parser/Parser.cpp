@@ -1,4 +1,8 @@
 #include "Parser.hpp"
+
+// PLS, DO NOT TOUCH THIS CODE!!!!!!!!!!!!!!!
+// It's works on magic
+
 void Parser::parse(const std::string& body, const std::string& rootURL, const std::string& urlDomain)
 {
     
@@ -6,7 +10,7 @@ void Parser::parse(const std::string& body, const std::string& rootURL, const st
     GumboOutput* output = gumbo_parse(body.c_str());
     if(!output)
     {
-        // handle 
+        std::cout << "Can't parse this" << std::endl;
         return;
     }
 
@@ -17,7 +21,6 @@ void Parser::parse(const std::string& body, const std::string& rootURL, const st
     
     gumbo_destroy_output(&kGumboDefaultOptions, output);
 }
-
 
 void Parser::extractLinks(GumboNode* node, const std::string& rootURL)
 {
@@ -38,17 +41,24 @@ void Parser::extractLinks(GumboNode* node, const std::string& rootURL)
                 {
                     tmp.pop_back();
                 }
+
+                // MySQL unique url required 256 symbols, so just skip this ¯\_(ツ)_/¯
+                if(tmp.size() >= 256)
+                {
+                    return;
+                }
                 this->links.push_back(tmp); 
             }
-            else if (tmp[0] == '/') // link is relative
+            else if (tmp[0] == '/')
             {
-                // effectiveUrl need fixes 
-
-                /*std::cout << "root: " << rootURL << std::endl;
                 std::string appended(rootURL); 
-                appended.append(tmp);    s
-                std::cout << appended << std::endl;
-                this->links.push_back(appended); */
+                appended.append(tmp);
+
+                if(appended.size() >= 256)
+                {
+                    return;
+                }
+                this->links.push_back(appended); 
             }
         }
         return;
@@ -60,7 +70,6 @@ void Parser::extractLinks(GumboNode* node, const std::string& rootURL)
         this->extractLinks(static_cast<GumboNode*>(children->data[i]), rootURL);
     }
 }
-
 
 void Parser::extractTitle(GumboNode* node)
 {

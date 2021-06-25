@@ -12,7 +12,7 @@ private:
     bool exist;
     
 public:
-    Page(std::string& domain, std::string& effectiveUrl, std::string& body, int status);
+    Page(std::string& domain, std::string& effectiveUrl, std::string& body, int status, bool exist);
     ~Page();
 
     [[nodiscard]] const std::string& getDomain() const;

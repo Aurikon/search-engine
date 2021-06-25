@@ -1,7 +1,13 @@
 cmake_minimum_required(VERSION 3.1)
 project(Crawler)
 
+
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_BUILD_TYPE Debug)
+
+set(EXECUTABLE_OUTPUT_PATH "bin")
+set(LIBRARY_OUTPUT_PATH "../lib")
+
 
 include_directories("PageLoader")
 include_directories("Parser")
@@ -10,9 +16,9 @@ include_directories("LinkInfo")
 include_directories("DocumentRepository")
 include_directories("MySQL")
 
-set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(crawler main.cpp)
+
 
 add_subdirectory(PageLoader)
 add_subdirectory(Parser)

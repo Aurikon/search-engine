@@ -35,8 +35,11 @@ Page PageLoader::load(const std::string& url, std::string& domain)
         }
         curl_easy_cleanup(curl);
     }
-    std::cout << contentType << effectiveUrl << std::endl;
-    return Page(domain, effectiveUrl, bodyResult, status);
+    if(contentType.find("html") == std::string::npos)
+    {
+        return Page(domain, effectiveUrl, bodyResult, status, false);
+    }
+    return Page(domain, effectiveUrl, bodyResult, status, true);
 }
 
 std::size_t PageLoader::write_data(void* ptr, std::size_t size, std::size_t nmemb, std::string* data)

@@ -8,6 +8,11 @@ Document::Document(std::string url, std::string title, std::string description, 
 {
 }
 
+const std::string& Document::getUrl() const
+{
+    return this->url;
+}
+
 const std::string& Document::getTitle() const
 {
     return this->title;
@@ -21,8 +26,4 @@ const std::string& Document::getDescription() const
 const std::string& Document::getContent() const
 {
     return this->content;
-}
-const std::string& Document::getUrl() const
-{
-    return this->url;
 }

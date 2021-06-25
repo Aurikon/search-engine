@@ -3,8 +3,13 @@
 
 WebsiteRepository::WebsiteRepository(sql::Connection* connection)
 {
+    const uint64_t dayBetween = 1; 
     sql::Statement* statement = connection->createStatement();
-    auto result = statement->executeQuery("SELECT * from Websites");
+
+    sql::PreparedStatement* prepst = connection->prepareStatement(
+        "SELECT * FROM Websites WHERE TIMESTAMPDIFF(DAY, lastTime, CURRENT_TIMESTAMP) = (?)");
+    prepst->setUInt(1, dayBetween);
+    auto result = prepst->executeQuery();
 
     while(result->next())
     {
@@ -39,7 +44,7 @@ void WebsiteRepository::add(const Website& website)
 void WebsiteRepository::update(const std::string& domain, const Website& website, sql::Connection* connection)
 {
     sql::PreparedStatement* prepst;
-    prepst = connection->prepareStatement("UPDATE Websites SET * WHERE domain=(?)");
+    prepst = connection->prepareStatement("UPDATE Websites SET * WHERE domain = (?)");
     prepst->setString(1, domain);
 
     prepst->execute();

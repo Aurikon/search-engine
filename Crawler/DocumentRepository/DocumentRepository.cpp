@@ -1,10 +1,5 @@
 #include "DocumentRepository.hpp"
 
-const std::vector<Document>& DocumentRepository::getAll() const
-{
-    
-}
-
 void DocumentRepository::add(const Document& document, sql::Connection* connection)
 {
     sql::PreparedStatement* prepst;

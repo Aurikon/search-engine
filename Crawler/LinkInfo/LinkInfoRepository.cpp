@@ -18,8 +18,8 @@ const std::optional<LinkInfo> LinkInfoRepository::getByUrl(const std::string& ur
     return {};
 }
 
-const std::vector<LinkInfo> LinkInfoRepository::getBy
-    (int websiteId, LinkStatus status, int count, sql::Connection* connection) const
+const std::vector<LinkInfo> LinkInfoRepository::getBy(
+    int websiteId, LinkStatus status, int count, sql::Connection* connection) const
 {
     std::vector<LinkInfo> linksResult;
     auto prepst = connection->prepareStatement("SELECT * from Links WHERE status=(?)");
@@ -41,7 +41,8 @@ const std::vector<LinkInfo> LinkInfoRepository::getBy
 void LinkInfoRepository::save(const LinkInfo& link, sql::Connection* connection)
 {
     sql::PreparedStatement* prepst;
-    prepst = connection->prepareStatement("INSERT INTO Links(url, websiteId, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE url=(?), status=(?)");
+    prepst = connection->prepareStatement(
+        "INSERT INTO Links(url, websiteId, status) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE url=(?), status=(?)");
     prepst->setString(1, link.getUrl());
     prepst->setInt(2, link.getWebsiteId());
     prepst->setInt(3, static_cast<int>(link.getStatus()));
