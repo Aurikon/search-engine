@@ -1,10 +1,15 @@
 #include <iostream>
 #include <string>
 
-#include "Client.hpp"
+#include "ConsoleUI.hpp"
 
 int main()
 {
+    ConsoleUI console("http://localhost:23568");
+
+    console.UIMain();
+
+    /*
     std::string host = "http://localhost:23568";
     Client client(host);
 
@@ -26,5 +31,7 @@ int main()
             std::cout << "\n\n";
         }
     }
+    */
+
     return 0;
 }

@@ -51,7 +51,7 @@ void Parser::extractLinks(GumboNode* node, const std::string& rootURL)
             }
             else if (tmp[0] == '/')
             {
-                std::string appended(rootURL); 
+                std::string appended(domain); 
                 appended.append(tmp);
 
                 if(appended.size() >= 256)

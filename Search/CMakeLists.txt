@@ -3,6 +3,9 @@ project(SearchServer)
 
 set(CMAKE_CXX_STANDARD 17)
 
+    set(EXECUTABLE_OUTPUT_PATH "bin")
+    set(LIBRARY_OUTPUT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/build/lib")
+
 include_directories("SearchResult")
 include_directories("Server")
 include_directories("MySQL")

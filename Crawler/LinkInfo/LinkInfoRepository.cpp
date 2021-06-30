@@ -22,8 +22,9 @@ const std::vector<LinkInfo> LinkInfoRepository::getBy(
     int websiteId, LinkStatus status, int count, sql::Connection* connection) const
 {
     std::vector<LinkInfo> linksResult;
-    auto prepst = connection->prepareStatement("SELECT * from Links WHERE status=(?)");
+    auto prepst = connection->prepareStatement("SELECT * from Links WHERE status=(?) AND websiteId=(?)");
     prepst->setUInt(1, 0);
+    prepst->setUInt(2, websiteId);
     auto result = prepst->executeQuery();
     for(int i = 0; i < count; ++i)
     {

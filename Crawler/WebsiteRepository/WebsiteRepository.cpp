@@ -3,11 +3,11 @@
 
 WebsiteRepository::WebsiteRepository(sql::Connection* connection)
 {
-    const uint64_t dayBetween = 1; 
+    const uint64_t dayBetween = 0; 
     sql::Statement* statement = connection->createStatement();
 
     sql::PreparedStatement* prepst = connection->prepareStatement(
-        "SELECT * FROM Websites WHERE TIMESTAMPDIFF(DAY, lastTime, CURRENT_TIMESTAMP) = (?)");
+        "SELECT * FROM Websites WHERE TIMESTAMPDIFF(DAY, lastTime, CURRENT_TIMESTAMP) > (?)");
     prepst->setUInt(1, dayBetween);
     auto result = prepst->executeQuery();
 
