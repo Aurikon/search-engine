@@ -17,4 +17,4 @@ You can build Crawler, Search and UI with build.sh
 Run programs from 
 `` Crawler/build/bin/crawler ``
 `` Search/build/bin/searchServer ``
-`` UserInterface//build/bin/ui ``
+`` UserInterface/build/bin/ui ``
